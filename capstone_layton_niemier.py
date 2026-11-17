@@ -240,8 +240,7 @@ plt.tight_layout()
 plt.savefig("charts/q3_margin_by_industry.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-# Finding: [Write your one-sentence finding here, with the numbers for
-#           Construction and Professional Services]
+# Finding: The industry with the higher margin was professional services.
 
 # ── 8. SAVE CLEAN DATA ────────────────────────────────────────
 df.to_csv("data/clean_data.csv", index=False)
