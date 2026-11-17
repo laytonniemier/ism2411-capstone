@@ -200,7 +200,8 @@ plt.tight_layout()
 plt.savefig("charts/q2_rates_defaults_margin.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-# Finding: [Write your one-sentence finding here, with numbers]
+# Finding: Higher rates do not pay off based on the data. For rates ranging from
+#          6-7.99%, the profit margin is 2.19% and rates that are 14%+, are -7.15%.
 
 # ── 7. BUSINESS QUESTION 3 ────────────────────────────────────
 # Question: How does Construction's profit margin compare to Professional Services?
