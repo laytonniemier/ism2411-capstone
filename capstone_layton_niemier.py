@@ -147,7 +147,9 @@ plt.tight_layout()
 plt.savefig("charts/q1_rate_vs_credit_score.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-# Finding: [Write your one-sentence finding here, with numbers]
+# Finding: Borrowers with credit scores of 500-599 paid an average interest rate
+#          of 14.37%. On the other hand, borrowers with a credit score of 750 and
+#          up have an average interest rate of 7.19%.
 
 # ── 6. BUSINESS QUESTION 2 ────────────────────────────────────
 # Question: Do higher rates even pay off over time because people that get
