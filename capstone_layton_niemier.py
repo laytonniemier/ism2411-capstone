@@ -240,7 +240,9 @@ plt.tight_layout()
 plt.savefig("charts/q3_margin_by_industry.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-# Finding: The industry with the higher margin was professional services.
+# Finding: The industry with the higher margin was professional services with a
+#          margin of 2.32%. On the other hand, construction had the lower margin
+#          of -1.38%.
 
 # ── 8. SAVE CLEAN DATA ────────────────────────────────────────
 df.to_csv("data/clean_data.csv", index=False)
