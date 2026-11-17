@@ -207,16 +207,22 @@ plt.show()
 # Portfolio profit margin per industry = total profit / total amount lent.
 # Reason: this weights each loan by its size, the way an investor's actual
 # return would be measured, instead of averaging small and large loans equally.
+# Default rate and average interest rate are added to help explain WHY
+# each industry's margin is high or low.
 industry_margin = df.groupby("industry").agg(
+    loans=("loan_id", "count"),
     total_profit=("profit", "sum"),
     total_lent=("loan_amount", "sum"),
+    avg_rate_pct=("interest_rate", "mean"),
+    default_rate_pct=("loan_status", lambda s: (s == "Default").mean() * 100),
 )
 industry_margin["margin_pct"] = (
     industry_margin["total_profit"] / industry_margin["total_lent"] * 100
 )
 industry_margin = industry_margin.sort_values("margin_pct", ascending=False)
-print("\nQ3 — Profit margin by industry (%):")
-print(industry_margin["margin_pct"].round(2))
+print("\nQ3 — Profit margin, default rate and average rate by industry:")
+print(industry_margin[["loans", "margin_pct", "default_rate_pct",
+                       "avg_rate_pct"]].round(2))
 
 highlight = ["Construction", "Professional Services"]
 colors = ["#1f77b4" if name in highlight else "#c7c7c7"
