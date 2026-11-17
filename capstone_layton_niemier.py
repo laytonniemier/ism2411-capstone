@@ -9,7 +9,14 @@ Business Questions:
      loan rates tend to default on their loans?
   3. How does Construction's profit margin compare to Professional Services?
 
-AI Disclosure: [List every AI tool you used and what you used it for]
+AI Disclosure: I used Claude (Anthropic). Claude suggested the finance dataset;
+  wrote the Python code (load, clean, derived columns, summary, analysis, charts)
+  and set up the GitHub repo; guided my choice of business questions with prompts
+  and feedback (the questions are mine); gave feedback on my findings and report,
+  flagged errors and explained correlation; and fixed spelling/capitalization,
+  inserted sentences I wrote, and assembled my paragraphs and charts into the PDF.
+  The questions, findings, interpretations and conclusion were written by me.
+  Full details are in README.md.
 """
 
 import numpy as np
