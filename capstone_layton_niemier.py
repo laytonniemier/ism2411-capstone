@@ -6,7 +6,7 @@ Date:   [Submission Date]
 Business Questions:
   1. [Your question 1]
   2. [Your question 2]
-  3. [Your question 3]
+  3. How does Construction's profit margin compare to Professional Services?
 
 AI Disclosure: [List every AI tool you used and what you used it for]
 """
@@ -121,8 +121,41 @@ print(
 # [Analysis + chart]
 
 # ── 7. BUSINESS QUESTION 3 ────────────────────────────────────
-# [State your question]
-# [Analysis + chart]
+# Question: How does Construction's profit margin compare to Professional Services?
+# All 8 industries are shown for context; the two being compared are highlighted.
+
+# Portfolio profit margin per industry = total profit / total amount lent.
+# Reason: this weights each loan by its size, the way an investor's actual
+# return would be measured, instead of averaging small and large loans equally.
+industry_margin = df.groupby("industry").agg(
+    total_profit=("profit", "sum"),
+    total_lent=("loan_amount", "sum"),
+)
+industry_margin["margin_pct"] = (
+    industry_margin["total_profit"] / industry_margin["total_lent"] * 100
+)
+industry_margin = industry_margin.sort_values("margin_pct", ascending=False)
+print("\nQ3 — Profit margin by industry (%):")
+print(industry_margin["margin_pct"].round(2))
+
+highlight = ["Construction", "Professional Services"]
+colors = ["#1f77b4" if name in highlight else "#c7c7c7"
+          for name in industry_margin.index]
+
+plt.figure(figsize=(9, 5))
+plt.bar(industry_margin.index, industry_margin["margin_pct"], color=colors)
+plt.axhline(0, color="black", linewidth=0.8)
+plt.title("Portfolio Profit Margin by Industry\n"
+          "(Construction and Professional Services highlighted)")
+plt.xlabel("Industry")
+plt.ylabel("Profit Margin (% of Amount Lent)")
+plt.xticks(rotation=30, ha="right")
+plt.tight_layout()
+plt.savefig("charts/q3_margin_by_industry.png", dpi=150, bbox_inches="tight")
+plt.show()
+
+# Finding: [Write your one-sentence finding here, with the numbers for
+#           Construction and Professional Services]
 
 # ── 8. SAVE CLEAN DATA ────────────────────────────────────────
 df.to_csv("data/clean_data.csv", index=False)
