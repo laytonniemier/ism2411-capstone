@@ -4,13 +4,15 @@ Author: Layton Niemier
 Date:   [Submission Date]
 
 Business Questions:
-  1. [Your question 1]
-  2. [Your question 2]
+  1. How do higher rates differ by credit score?
+  2. Do higher rates even pay off over time because people that get higher
+     loan rates tend to default on their loans?
   3. How does Construction's profit margin compare to Professional Services?
 
 AI Disclosure: [List every AI tool you used and what you used it for]
 """
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -111,14 +113,92 @@ print(
 )
 
 # ── 5. BUSINESS QUESTION 1 ────────────────────────────────────
-# [State your question in a comment]
-# [Your analysis code here]
-# [Your chart code here — with title, axis labels, savefig, show]
-# [Write a one-sentence finding in a comment]
+# Question: How do higher rates differ by credit score?
+
+# Only loans with a credit score can be plotted (blanks were left as NaN in CLEAN)
+scored = df.dropna(subset=["credit_score"]).copy()
+
+# Correlation: -1 = perfect downward relationship, 0 = none, +1 = perfect upward
+correlation = scored["credit_score"].corr(scored["interest_rate"])
+print(f"\nQ1 — Correlation between credit score and interest rate: {correlation:.2f}")
+
+# Average rate within credit-score ranges, to have specific numbers to quote
+credit_bins = [500, 600, 650, 700, 750, 850]
+credit_labels = ["500-599", "600-649", "650-699", "700-749", "750+"]
+scored["credit_band"] = pd.cut(scored["credit_score"], bins=credit_bins,
+                               labels=credit_labels, right=False)
+print("Average interest rate (%) by credit score range:")
+print(scored.groupby("credit_band", observed=True)["interest_rate"].mean().round(2))
+
+# Scatter plot: two number columns -> scatter is the right chart type.
+# alpha makes overlapping dots see-through; the red line is the trend (best fit).
+slope, intercept = np.polyfit(scored["credit_score"], scored["interest_rate"], 1)
+x_line = np.linspace(scored["credit_score"].min(), scored["credit_score"].max(), 100)
+
+plt.figure(figsize=(9, 5))
+plt.scatter(scored["credit_score"], scored["interest_rate"], alpha=0.25, s=12)
+plt.plot(x_line, slope * x_line + intercept, color="red", linewidth=2,
+         label=f"Trend line (correlation = {correlation:.2f})")
+plt.title("Interest Rate Charged vs. Borrower Credit Score")
+plt.xlabel("Credit Score")
+plt.ylabel("Interest Rate (%)")
+plt.legend()
+plt.tight_layout()
+plt.savefig("charts/q1_rate_vs_credit_score.png", dpi=150, bbox_inches="tight")
+plt.show()
+
+# Finding: [Write your one-sentence finding here, with numbers]
 
 # ── 6. BUSINESS QUESTION 2 ────────────────────────────────────
-# [State your question]
-# [Analysis + chart]
+# Question: Do higher rates even pay off over time because people that get
+#           higher loan rates tend to default on their loans?
+
+# Group loans into interest-rate ranges
+rate_bins = [6, 8, 10, 12, 14, 18]
+rate_labels = ["6-7.99%", "8-9.99%", "10-11.99%", "12-13.99%", "14%+"]
+df["rate_band"] = pd.cut(df["interest_rate"], bins=rate_bins,
+                         labels=rate_labels, right=False)
+
+# For each range: default rate (% of loans that defaulted) and
+# profit margin (total profit / total lent, weighted by loan size like Q3)
+rate_summary = df.groupby("rate_band", observed=True).agg(
+    loans=("loan_id", "count"),
+    total_lent=("loan_amount", "sum"),
+    total_profit=("profit", "sum"),
+    default_rate_pct=("loan_status", lambda s: (s == "Default").mean() * 100),
+)
+rate_summary["margin_pct"] = (
+    rate_summary["total_profit"] / rate_summary["total_lent"] * 100
+)
+print("\nQ2 — Default rate and profit margin by interest-rate range:")
+print(rate_summary[["loans", "default_rate_pct", "margin_pct"]].round(2))
+
+# Two charts side by side in one image: left = defaults, right = profit margin
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+ax1.bar(rate_summary.index.astype(str), rate_summary["default_rate_pct"],
+        color="#d62728")
+ax1.set_title("Default Rate by Interest Rate")
+ax1.set_xlabel("Interest Rate Range")
+ax1.set_ylabel("Loans Defaulted (%)")
+ax1.tick_params(axis="x", rotation=30)
+
+margin_colors = ["#2ca02c" if m >= 0 else "#d62728"
+                 for m in rate_summary["margin_pct"]]
+ax2.bar(rate_summary.index.astype(str), rate_summary["margin_pct"],
+        color=margin_colors)
+ax2.axhline(0, color="black", linewidth=0.8)
+ax2.set_title("Profit Margin by Interest Rate")
+ax2.set_xlabel("Interest Rate Range")
+ax2.set_ylabel("Profit Margin (% of Amount Lent)")
+ax2.tick_params(axis="x", rotation=30)
+
+fig.suptitle("Do Higher Interest Rates Pay Off?", fontsize=14)
+plt.tight_layout()
+plt.savefig("charts/q2_rates_defaults_margin.png", dpi=150, bbox_inches="tight")
+plt.show()
+
+# Finding: [Write your one-sentence finding here, with numbers]
 
 # ── 7. BUSINESS QUESTION 3 ────────────────────────────────────
 # Question: How does Construction's profit margin compare to Professional Services?
